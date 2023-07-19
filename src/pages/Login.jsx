@@ -2,32 +2,29 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Formik } from 'formik'
 import * as Yup from 'yup';
 import UserContext from '../Context/UserContext';
+import UserOnlineContext from '../Context/UserOnlineContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 function Login() {
-    // const user = useContext(UserContext);
+    const user = useContext(UserContext);
+    const { userOnline, setUserOnline } = useContext(UserOnlineContext);
+    const navigate = useNavigate();
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
-    const [user, setUser] = useState([])
+    const [error, setError] = useState(false)
 
 
-    const getUser = async () => {
-        const response = await axios.get('https://fakestoreapi.com/users');
-        setUser(response.data)
-    }
 
-    useEffect(() => {
-        getUser()
-    },)
-
-    const control = () => {
+    const control = (email, password) => {
         const controlUser = user.find(user => email == user.email && password == user.password)
 
         if (controlUser) {
-            console.log('giriş başarılı')
+            setUserOnline(true)
+            navigate(`/profile/${email}`)
         } else {
-            console.log('giriş başarısız')
+            setError(true)
+            setTimeout(() => {
+                setError(false)
+            }, 3000);
 
         }
 
@@ -39,7 +36,7 @@ function Login() {
 
             <div className='my-40 flex justify-center'>
 
-                <div className='w-5/12 border py-20 px-10'>
+                <div className='lg:w-5/12 border  py-20 lg:px-10'>
                     <Formik
                         initialValues={{
                             password: '',
@@ -53,28 +50,25 @@ function Login() {
                             })
                         }
                         onSubmit={async (values, { resetForm, setSubmitting }) => {
-
-                            setEmail(values.email)
-                            setPassword(values.password)
-
-                            await new Promise(resolve => {
-                                setEmail(values.email)
-                                setPassword(values.password)
-                                resolve()
-                            })
-                            // setTimeout(() => {
-                            //     setSubmitting(false)
-                            //     resetForm()
-                            // }, 2000);
-                            control()
+                            control(values.email, values.password)
+                            setTimeout(() => {
+                                setSubmitting(false)
+                                resetForm()
+                            }, 2000);
 
                         }}
 
                     >
                         {
                             ({ values, errors, handleSubmit, handleReset, touched, handleChange, dirty, isSubmitting }) => (
-                                <form className='form    flex flex-col ' onSubmit={handleSubmit}  >
-
+                                <form className='form flex flex-col items-center lg:items-start ' onSubmit={handleSubmit}  >
+                                    {
+                                        error ? <div className=' text-red-700 text-lg italic  w-7/12 my-5 font-bold'>
+                                            <div className='text-center capitalize'>
+                                                the username or password is incorrect please try again
+                                            </div>
+                                        </div> : null
+                                    }
                                     <div className="title font-bold text-3xl">
                                         Sign in
                                     </div>

@@ -5,7 +5,6 @@ import { NavLink } from 'react-router-dom'
 import CartContext from '../../Context/CartContext'
 function Icon() {
     const cart = useContext(CartContext);
-    console.log()
     return (
         <div >
             <div className='flex justify-end'>

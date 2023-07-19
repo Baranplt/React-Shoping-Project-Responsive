@@ -23,7 +23,7 @@ function ProductItem({ item }) {
                         </div>
                     </div>
                     <div className='text border-t-2 flex flex-col justify-center items-center'>
-                        <div className="title font-semibold my-3 line" >
+                        <div className="title font-semibold my-3 line px-2" >
                             {item.title}
                         </div>
                         <div className="price flex">

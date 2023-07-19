@@ -16,13 +16,24 @@ import Cart from './components/Cart'
 import AddBasketContext from "./Context/AddBasketContext";
 import UserContext from "./Context/UserContext";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import UserOnlineContext from "./Context/UserOnlineContext";
+import UserParamsContext from "./Context/UserParamsContext";
+import Register from "./pages/Register";
 function App() {
   const [products, setProducts] = useState([])
   const [cart, setCart] = useState([])
   const [user, setUser] = useState([])
-
+  const [userOnline, setUserOnline] = useState(false)
+  const [userParams, setUserParams] = useState('')
+  const updateParams = (par) => {
+    setUserParams(par)
+  }
   const updateCart = (par) => {
     setCart(par)
+  }
+  const updateUserOnline = (par) => {
+    setUserOnline(par)
   }
   const getProducts = async () => {
     const response = await axios.get('https://fakestoreapi.com/products');
@@ -32,9 +43,11 @@ function App() {
     const response = await axios.get('https://fakestoreapi.com/users');
     setUser(response.data)
   }
+
   useEffect(() => {
     getProducts()
     getUser()
+
   }, [])
   const addBasket = (found) => {
     const addFind = cart.find(item => item.id === found.id);
@@ -61,40 +74,44 @@ function App() {
   }
 
   return (
-    <CartContext.Provider value={{ cart: cart, setCart: updateCart }}>
-      <AddBasketContext.Provider value={addBasket} >
-        <ProductContext.Provider value={products} className="">
-          <UserContext.Provider value={user}>
+    <UserParamsContext.Provider value={{ userParams, setUserParams: updateParams }}>
 
-            <div className="bg-regal-blue py-2 mb-2">
-              <HeaderSup />
-            </div>
-            <div className="container">
-              <Header />
-              <Homes />
-              <div >
+      <CartContext.Provider value={{ cart: cart, setCart: updateCart }}>
+        <UserOnlineContext.Provider value={{ userOnline, setUserOnline: updateUserOnline }}>
+          <AddBasketContext.Provider value={addBasket} >
+            <ProductContext.Provider value={products} className="">
+              <UserContext.Provider value={user}>
+                <div className="bg-regal-blue py-2 mb-2">
+                  <HeaderSup />
+                </div>
+                <div className="container">
+                  <Header />
+                  <Homes />
+                  <div >
+                    <Routes >
+                      <Route path={'/'} element={<Home />} />
+                      <Route path={'/cart'} element={<Cart />} />
+                      <Route path={'/details'} element={<Details />} />
+                      <Route path={'/contact'} element={<Contact />} />
+                      <Route path={'/productDetail/:id'} element={<ProductDetail />} />
+                      <Route path={'login'} element={<Login />} />
+                      <Route path={'profile/:email'} element={<Profile />} />
+                      <Route path={'register'} element={<Register />} />
 
-                <Routes >
-                  <Route path={'/'} element={<Home />} />
-                  <Route path={'/cart'} element={<Cart />} />
-                  <Route path={'/details'} element={<Details />} />
-                  <Route path={'/contact'} element={<Contact />} />
-                  <Route path={'/productDetail/:id'} element={<ProductDetail />} />
-                  <Route path={'login'} element={<Login />} />
-                </Routes>
-              </div>
+                    </Routes>
+                  </div>
+                </div>
+                <div className="bg-regal-blue ">
+                  <Footer />
+                </div>
+                0              </UserContext.Provider>
+            </ProductContext.Provider>
+          </AddBasketContext.Provider>
+        </UserOnlineContext.Provider>
 
-            </div>
-            <div className="bg-regal-blue ">
-              <Footer />
+      </CartContext.Provider>
+    </UserParamsContext.Provider>
 
-            </div>
-          </UserContext.Provider>
-        </ProductContext.Provider>
-      </AddBasketContext.Provider>
-
-
-    </CartContext.Provider>
   );
 }
 
